@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from datetime import datetime
+from datetime import datetime, timezone
 
 
 class Client(BaseModel):
@@ -15,11 +15,24 @@ class TransactionSchema(BaseModel):
 class TransactionResponseSchema(TransactionSchema):
     realizada_em: datetime
 
+    class Config:
+        from_attributes = True
+
 class CreateTransactionResponseSchema(BaseModel):
     limite: int
     saldo: int
 
 class StatementSchema(BaseModel):
-    saldo: dict
-    ultimas_transacoes: list[TransactionSchema]# 10 ultimas transacoes descrescente por data/hora 
+    total: int = Field(alias='saldo')
+    data_extrato: datetime = Field(default_factory=datetime.now)
+    limite: int
+        
+    class Config:
+        from_attributes = True
+
+class StatementResponseSchema(BaseModel):
+    saldo: StatementSchema
+    ultimas_transacoes: list[TransactionResponseSchema]
+
+
                                                

@@ -1,11 +1,11 @@
 from fastapi import FastAPI, Depends, Response, status
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import NoResultFound
+from sqlalchemy import desc
 
 from db_session import get_db
-from schemas import Client as ClientSchema, TransactionSchema, StatementSchema, CreateTransactionResponseSchema
+from schemas import Client as ClientSchema, TransactionSchema, CreateTransactionResponseSchema, StatementResponseSchema
 from models import Client, Transaction
-
 
 app = FastAPI()
 
@@ -38,6 +38,7 @@ async def transaction(id: int, transaction: TransactionSchema, response: Respons
 
     except NoResultFound:
         response.status_code = status.HTTP_404_NOT_FOUND
+        return {'error': 'Id inexistente'}
     except Exception as e:
         db.rollback()
         response.status_code = status.HTTP_422_UNPROCESSABLE_ENTITY
@@ -45,13 +46,36 @@ async def transaction(id: int, transaction: TransactionSchema, response: Respons
 
     return client_model
 
-@app.get('/clientes/{id}/extrato', response_model=StatementSchema)
-async def transaction():
-    return ''
+@app.get('/clientes/{id}/extrato', response_model_by_alias=False, response_model=StatementResponseSchema | dict)
+async def statement(id: int, response: Response, db: Session = Depends(get_db)):
+    try:
+        #Descobrir como pegar client_model com as 10 ultimas transactions em uma query só
+        client_model = db.query(Client)\
+                        .filter_by(id=id)\
+                        .one()
+
+        transaction_models = db.query(Transaction).filter_by(client_id=id)\
+                    .order_by(desc(Transaction.realizada_em))\
+                    .limit(10)\
+                    .all()
+
+        statement = StatementResponseSchema(saldo=client_model, ultimas_transacoes=transaction_models)
+
+    except NoResultFound:
+        response.status_code = status.HTTP_404_NOT_FOUND
+        return {'error': 'Id inexistente'}
+    except Exception as e:
+        response.status_code = status.HTTP_422_UNPROCESSABLE_ENTITY
+        return {'error': str(e)}
+
+    return statement
+
 
 # Endpoints de teste
 @app.get('/clientes', response_model=list[ClientSchema])
 async def test_get_all_Client(db: Session = Depends(get_db)):
     users = db.query(Client).all()
+
+
 
     return users
