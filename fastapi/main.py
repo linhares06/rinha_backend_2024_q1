@@ -15,7 +15,7 @@ async def transaction(id: int, transaction: TransactionSchema, response: Respons
     #Uma transação de débito nunca pode deixar o saldo do cliente menor que seu limite disponível.
     #Exemplo: um cliente com limite de 1000 nunca deverá ter o saldo menor que -1000. Caso seja menor que -1000, rollback e retornar 422
     #Se o id da URL for inexistente (exemplo: 6), a API deve retornar HTTP Status Code 404.
-    
+
     try:
         client_model = db.query(Client).filter_by(id=id).one()
         transaction_model = Transaction(**transaction.model_dump())
@@ -23,6 +23,7 @@ async def transaction(id: int, transaction: TransactionSchema, response: Respons
         if transaction_model.tipo == 'd':
             saldo = client_model.saldo - transaction_model.valor
             if saldo + client_model.limite < 0:
+
                 response.status_code = status.HTTP_422_UNPROCESSABLE_ENTITY
                 return {'limite': 'Ta querendo gastar mais do que tem, champz'}   
         else:
@@ -48,11 +49,10 @@ async def transaction(id: int, transaction: TransactionSchema, response: Respons
 
 @app.get('/clientes/{id}/extrato', response_model_by_alias=False, response_model=StatementResponseSchema | dict)
 async def statement(id: int, response: Response, db: Session = Depends(get_db)):
+
     try:
         #Descobrir como pegar client_model com as 10 ultimas transactions em uma query só
-        client_model = db.query(Client)\
-                        .filter_by(id=id)\
-                        .one()
+        client_model = db.query(Client).filter_by(id=id).one()
 
         transaction_models = db.query(Transaction).filter_by(client_id=id)\
                     .order_by(desc(Transaction.realizada_em))\
@@ -74,8 +74,4 @@ async def statement(id: int, response: Response, db: Session = Depends(get_db)):
 # Endpoints de teste
 @app.get('/clientes', response_model=list[ClientSchema])
 async def test_get_all_Client(db: Session = Depends(get_db)):
-    users = db.query(Client).all()
-
-
-
-    return users
+    return db.query(Client).all()

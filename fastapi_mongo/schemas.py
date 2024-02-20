@@ -6,6 +6,7 @@ class Client(BaseModel):
     id: int
     limite: int
     saldo: int
+    transactions: list['TransactionResponseSchema'] = []
 
 class TransactionSchema(BaseModel):
     valor: int = Field(gt=0)
@@ -13,10 +14,7 @@ class TransactionSchema(BaseModel):
     descricao: str = Field(min_length=1, max_length=10)
 
 class TransactionResponseSchema(TransactionSchema):
-    realizada_em: datetime
-
-    class Config:
-        from_attributes = True
+    realizada_em: datetime 
 
 class CreateTransactionResponseSchema(BaseModel):
     limite: int
@@ -26,9 +24,6 @@ class StatementSchema(BaseModel):
     total: int = Field(alias='saldo')
     data_extrato: datetime = Field(default_factory=datetime.now)
     limite: int
-        
-    class Config:
-        from_attributes = True
 
 class StatementResponseSchema(BaseModel):
     saldo: StatementSchema
