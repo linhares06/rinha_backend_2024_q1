@@ -125,3 +125,4 @@ _local_settings.py
 gunicorn-error-log
 createdb.py
 output.txt
+fetch_post.js

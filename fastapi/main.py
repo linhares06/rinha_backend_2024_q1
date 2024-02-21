@@ -23,7 +23,6 @@ async def transaction(id: int, transaction: TransactionSchema, response: Respons
         if transaction_model.tipo == 'd':
             saldo = client_model.saldo - transaction_model.valor
             if saldo + client_model.limite < 0:
-
                 response.status_code = status.HTTP_422_UNPROCESSABLE_ENTITY
                 return {'limite': 'Ta querendo gastar mais do que tem, champz'}   
         else:
