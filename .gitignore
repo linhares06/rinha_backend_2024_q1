@@ -127,3 +127,8 @@ createdb.py
 output.txt
 fetch_post.js
 nodejs/node_modules/*
+rinha.sln
+**/bin
+**/obj
+**/Properties
+appsettings*.json
