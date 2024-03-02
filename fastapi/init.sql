@@ -1,33 +1,33 @@
 CREATE TABLE IF NOT EXISTS clients (
     "id"                SERIAL,
-    "name"              VARCHAR(50) NOT NULL,
-    "limit"             INT NOT NULL,
-    "balance"           INT DEFAULT 0,
+    "limite"            INT NOT NULL,
+    "saldo_inicial"     INT NOT NULL,
 
     PRIMARY KEY (id)
 );
 
 
 CREATE TABLE IF NOT EXISTS transactions (
-    "id"           SERIAL,
-    "value"        INT NOT NULL,
-    "type"         VARCHAR(1) NOT NULL,
-    "description"  VARCHAR(10) NOT NULL,
-    "created_at"   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    "id"             SERIAL,
+    "valor"          INT NOT NULL,
+    "tipo"           VARCHAR(1) NOT NULL,
+    "descricao"      VARCHAR(10) NOT NULL,
+    "realizada_Em"   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
-    "client_id"    INT NOT NULL,
+    "client_id"      INT NOT NULL,
 
+    PRIMARY KEY (id)
     CONSTRAINT "clients_fk" FOREIGN KEY ("client_id") REFERENCES clients("id")
 );
 
 
 DO $$
 BEGIN
-  INSERT INTO clients ("name", "limit")
+  INSERT INTO clients ("id", "limite", "saldo_inicial")
   VALUES
-    ('o barato sai caro', 1000 * 100),
-    ('zan corp ltda', 800 * 100),
-    ('les cruders', 10000 * 100),
-    ('padaria joia de cocaia', 100000 * 100),
-    ('kid mais', 5000 * 100);
+    (1, 100000, 0),
+    (2, 80000, 0),
+    (3, 1000000, 0),
+    (4, 10000000, 0),
+    (5, 500000, 0);
 END; $$
