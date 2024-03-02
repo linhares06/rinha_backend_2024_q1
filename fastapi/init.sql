@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS clients (
     "id"                SERIAL,
     "limite"            INT NOT NULL,
-    "saldo_inicial"     INT NOT NULL,
+    "saldo"             INT NOT NULL,
 
     PRIMARY KEY (id)
 );
@@ -12,18 +12,18 @@ CREATE TABLE IF NOT EXISTS transactions (
     "valor"          INT NOT NULL,
     "tipo"           VARCHAR(1) NOT NULL,
     "descricao"      VARCHAR(10) NOT NULL,
-    "realizada_Em"   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    "realizada_em"   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
     "client_id"      INT NOT NULL,
 
-    PRIMARY KEY (id)
+    PRIMARY KEY (id),
     CONSTRAINT "clients_fk" FOREIGN KEY ("client_id") REFERENCES clients("id")
 );
 
 
 DO $$
 BEGIN
-  INSERT INTO clients ("id", "limite", "saldo_inicial")
+  INSERT INTO clients ("id", "limite", "saldo")
   VALUES
     (1, 100000, 0),
     (2, 80000, 0),
