@@ -84,7 +84,7 @@ app.MapGet("/clientes/{id}/extrato", async (int id, AppDbContext db) =>
     }
     catch(Exception ex)
     {
-        return Results.UnprocessableEntity(ex);
+        return Results.UnprocessableEntity(ex.Message);
     }
 });
 

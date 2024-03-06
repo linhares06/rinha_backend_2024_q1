@@ -83,4 +83,4 @@ api.add_resource(Transaction, '/clientes/<int:id>/transacoes')
 api.add_resource(Statement, '/clientes/<int:id>/extrato')
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()
